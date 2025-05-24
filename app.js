@@ -31,6 +31,7 @@ app.get('/risultati', (req, res) => {
 
 app.post('/salva-risultati', (req, res) => {
   const risultati = req.body.risultati;
+
   risultati.forEach((risultato, index) => {
     const partita = req.session.partite[index];
     partita.risultato = {
@@ -38,16 +39,16 @@ app.post('/salva-risultati', (req, res) => {
       punti2: parseInt(risultato.punti2, 10)
     };
   });
-  res.redirect('/classifica');
+  const partite = req.session.partite || [];
+  const classifica = torneoUtils.calcolaClassifica(partite);
+  req.session.classifica = classifica;
+  res.render('classifica', { classifica });
 });
 
 
 // Mostra classifica
 app.get('/classifica', (req, res) => {
-  const partite = req.session.partite || [];
-  const classifica = torneoUtils.calcolaClassifica(partite);
-  req.session.classifica = classifica;
-  res.render('classifica', { classifica });
+  res.render('classifica');
 });
 
 

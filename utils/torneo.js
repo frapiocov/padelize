@@ -158,7 +158,6 @@ function creaFinale(vincitori) {
   };
 }
 
-
 function creaFasiFinali(sessione) {
   const ordinati = calcolaClassifica(sessione);
   const gold = ordinati.slice(0, 8);
