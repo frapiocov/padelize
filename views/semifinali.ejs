@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Semifinali</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Semifinali - Round Gold</h1>
+  <form action="/semifinali/risultati" method="POST">
+    <% gold.forEach((match, index) => { %>
+      <h3>Partita <%= index + 1 %></h3>
+      <p><%= match.squadra1[0] %> + <%= match.squadra1[1] %> vs <%= match.squadra2[0] %> + <%= match.squadra2[1] %></p>
+      <label>Punteggio Squadra 1:</label>
+      <input type="number" name="gold<%= index %>a" required>
+      <label>Punteggio Squadra 2:</label>
+      <input type="number" name="gold<%= index %>b" required>
+      <hr>
+    <% }) %>
+
+    <h1>Semifinali - Round Silver</h1>
+    <% silver.forEach((match, index) => { %>
+      <h3>Partita <%= index + 1 %></h3>
+      <p><%= match.squadra1[0] %> + <%= match.squadra1[1] %> vs <%= match.squadra2[0] %> + <%= match.squadra2[1] %></p>
+      <label>Punteggio Squadra 1:</label>
+      <input type="number" name="silver<%= index %>a" required>
+      <label>Punteggio Squadra 2:</label>
+      <input type="number" name="silver<%= index %>b" required>
+      <hr>
+    <% }) %>
+
+    <button type="submit">Vai alla Finale</button>
+  </form>
+</body>
+</html>
