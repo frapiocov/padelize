@@ -3,9 +3,19 @@
 <head>
   <title>Finali</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
 </head>
-<body>
-  <h1>Finale Round Gold</h1>
+<body class="p-4">
+  <div class="mb3">
+
+
+  <h1>Finali 🏆</h1>
+
+  <h4>Round Gold</h4>
   <form action="/finale/risultati" method="POST">
     <p><%= gold[0][0] %> + <%= gold[0][1] %> vs <%= gold[1][0] %> + <%= gold[1][1] %></p>
     <label>Punteggio Squadra 1:</label>
@@ -13,14 +23,15 @@
     <label>Punteggio Squadra 2:</label>
     <input type="number" name="goldB" required>
 
-    <h1>Finale Round Silver</h1>
+    <h4>Round Silver</h4>
     <p><%= silver[0][0] %> + <%= silver[0][1] %> vs <%= silver[1][0] %> + <%= silver[1][1] %></p>
     <label>Punteggio Squadra 1:</label>
     <input type="number" name="silverA" required>
     <label>Punteggio Squadra 2:</label>
     <input type="number" name="silverB" required>
 
-    <button type="submit">Vedi Premiazione</button>
+    <button type="submit" class="btn btn-primary">Premiazione</button>
   </form>
+  </div>
 </body>
 </html>

@@ -19,10 +19,10 @@ app.get('/setup', (req, res) => res.render('setup'));
 app.post('/crea-torneo', (req, res) => {
   req.session.giocatori = torneoUtils.creaGiocatori(req.body);
   req.session.partite = torneoUtils.generaPartite(req.session.giocatori, 5);
-  res.redirect('/results');
+  res.redirect('/risultati');
 });
 
-app.get('/results', (req, res) => {
+app.get('/risultati', (req, res) => {
   res.render('index', {
     giocatori: req.session.giocatori,
     partite: req.session.partite
@@ -45,7 +45,7 @@ app.post('/salva-risultati', (req, res) => {
 // Mostra classifica
 app.get('/classifica', (req, res) => {
   const partite = req.session.partite || [];
-  const classifica = calcolaClassifica(partite);
+  const classifica = torneoUtils.calcolaClassifica(partite);
   req.session.classifica = classifica;
   res.render('classifica', { classifica });
 });
@@ -140,13 +140,6 @@ app.get('/premiazione', (req, res) => {
 
 app.listen(3000, () => console.log('Torneo avviato su http://localhost:3000'));
 
-
-// livelli giocatori
-function getLivelloGiocatore(nome) {
-  if (nome.startsWith('E')) return 1; // Esordienti
-  if (nome.startsWith('A')) return 3; // Avanzati
-  return 2; // Intermedi
-}
 
 function suddividiInRound(classifica) {
   const roundGold = classifica.slice(0, 8);
