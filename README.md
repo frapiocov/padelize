@@ -2,6 +2,8 @@
 
 This is a lightweight web application for managing a Padel tournament using **Node.js**, **Express**, **EJS**, and **Bootstrap**. The app is designed for in-session use only—no login or database required.
 
+hosted on [render](https://render.com) |
+[visit site](https://padelize.onrender.com/)
 ---
 
 ### 🚀 Features

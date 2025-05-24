@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const torneoUtils = require('./utils/torneo');
-
+const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -138,7 +138,7 @@ app.get('/premiazione', (req, res) => {
   res.render('premiazione', { vincitori: req.session.vincitori });
 });
 
-app.listen(3000, () => console.log('Torneo avviato su http://localhost:3000'));
+app.listen(PORT, () => console.log('webapp avviata su http://localhost:3000'));
 
 
 function suddividiInRound(classifica) {
