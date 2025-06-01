@@ -1,105 +1,182 @@
+
+
 function creaGiocatori(body) {
   const giocatori = [];
   for (let i = 1; i <= 16; i++) {
     giocatori.push({
       nome: body[`giocatore${i}`],
       livello: parseInt(body[`livello${i}`]),
-      punteggio: 0
+      punteggio: 0,
+      lastMatch: false
     });
   }
   return giocatori;
 }
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
 
-function generaPartite(giocatori, numTurni = 5) {
-  const partite = [];
+function creaTurno(giocatori, turnoCorrente = 1) {
+  // Raggruppa i giocatori per livello
+  const livelli = {
+    4: [],
+    3: [],
+    2: [],
+    1: []
+  };
 
-  const numCampi = 4;
-  const perTurno = 16;
+  giocatori.forEach(giocatore => {
+    livelli[giocatore.livello].push(giocatore);
+  });
 
-  for (let turno = 1; turno <= numTurni; turno++) {
-    // Copia e mischiamo i giocatori ogni turno
-    const mix = [...giocatori];
-    shuffle(mix);
+  // Aggiorna i livelli in base all'esito dell'ultimo match (solo se turno > 1)
+  if (turnoCorrente > 1) {
+    const nuoviLivelli = { 4: [], 3: [], 2: [], 1: [] };
 
-    const partiteTurno = [];
+    Object.keys(livelli).forEach(livello => {
+      livelli[livello].forEach(giocatore => {
+        let nuovoLivello = giocatore.livello;
 
-    // Crea 8 coppie → 4 partite
-    const coppie = [];
-    for (let i = 0; i < perTurno; i += 2) {
-      coppie.push([mix[i], mix[i + 1]]);
-    }
+        if (giocatore.lastMatch === true && giocatore.livello < 4) {
+          nuovoLivello++; // Salta di livello in su se ha vinto
+        } else if (giocatore.lastMatch === false && giocatore.livello > 1) {
+          nuovoLivello--; // Retrocede se ha perso
+        }
 
-    for (let campo = 1; campo <= numCampi; campo++) {
-      const idx = (campo - 1) * 2;
-      partiteTurno.push({
-        turno,
-        campo,
-        squadra1: coppie[idx],
-        squadra2: coppie[idx + 1],
-        risultato: null // da aggiornare dopo
+        nuoviLivelli[nuovoLivello].push({
+          ...giocatore,
+          livello: nuovoLivello
+        });
       });
-    }
+    });
 
-    partite.push(...partiteTurno);
+    // Aggiorna i livelli
+    Object.assign(livelli, nuoviLivelli);
   }
+
+  // Inizializza i campi vuoti
+  const campi = {
+    a: [],
+    b: [],
+    c: [],
+    d: []
+  };
+
+  // Funzione per riempire i campi con 4 giocatori (recuperando dai livelli inferiori se serve)
+  function riempiCampo(campo, livello) {
+    while (campi[campo].length < 4) {
+      if (livelli[livello].length > 0) {
+        campi[campo].push(livelli[livello].shift());
+      } else {
+        livello--;
+        if (livello === 0) break;
+      }
+    }
+  }
+
+  // Riempie i campi
+  riempiCampo('a', 4);
+  riempiCampo('b', 3);
+  riempiCampo('c', 2);
+  riempiCampo('d', 1);
+
+  // Funzione di shuffle per mischiare
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // Funzione per creare coppie casuali
+  function creaCoppie(giocatoriCampo) {
+    const shuffled = shuffle([...giocatoriCampo]);
+    const coppie = [];
+    for (let i = 0; i < shuffled.length; i += 2) {
+      if (i + 1 < shuffled.length) {
+        coppie.push([shuffled[i], shuffled[i + 1]]);
+      } else {
+        coppie.push([shuffled[i]]); // eventuale singolo
+      }
+    }
+    return coppie;
+  }
+
+  // Genera partite per ciascun campo
+  const partite = {
+    a: {coppie: creaCoppie(campi.a), punteggio:[0,0]},
+    b: {coppie: creaCoppie(campi.b), punteggio:[0,0]},
+    c: {coppie: creaCoppie(campi.c), punteggio:[0,0]},
+    d: {coppie: creaCoppie(campi.d), punteggio:[0,0]}
+  };
 
   return partite;
 }
 
-function calcolaPuntiPartita(partita) {
-  const { squadra1, squadra2, risultato } = partita;
-  const { punti1, punti2 } = risultato;
+function calcolaPunteggi(partite) {
+  // Crea un dizionario con i giocatori
+  const giocatoriMap = {};
+  const vittNetta = 3; // Punti per vittoria netta
+  const vittStretta = 2; // Punti per vittoria stretta
 
-  // Calcolo punteggio base
-  let puntiSquadra1 = 0;
-  let puntiSquadra2 = 0;
+  // Scansiona tutte le partite
+  for (const [campo, {coppie, punteggio}] of Object.entries(partite)) {
+    coppie.forEach((coppia, index) => {
+      // Recupera i risultati numerici
+      const risultatoPartita = partite[campo]?.[index];
+      if (!risultatoPartita || coppia.length !== 2) {
+        // Partite senza avversario: vittoria automatica con 3 punti e lastMatch vincente
+        const giocatore = coppia[0];
+        giocatore.punteggio += 3;
+        giocatore.lastMatch = true;
+        giocatoriMap[giocatore.nome] = giocatore;
+        return;
+      }
 
-  if (punti1 > punti2) {
-    const margine = punti1 - punti2;
-    puntiSquadra1 = margine >= 6 ? 3 : 2;
-    puntiSquadra2 = margine >= 6 ? 0 : 1;
-  } else if (punti2 > punti1) {
-    const margine = punti2 - punti1;
-    puntiSquadra2 = margine >= 6 ? 3 : 2;
-    puntiSquadra1 = margine >= 6 ? 0 : 1;
-  } else {
-    puntiSquadra1 = 1;
-    puntiSquadra2 = 1;
+      const [g1, g2] = coppia;
+      const punti1 = parseInt(punteggio[0]);
+      const punti2 = parseInt(punteggio[1]);
+
+      // Calcola la squadra vincente
+      let vincitore, perdente;
+      if (punti1 >= punti2) {
+        vincitore = g1;
+        perdente = g2;
+      } else if (punti2 > punti1) {
+        vincitore = g2;
+        perdente = g1;
+      }
+
+      // Calcola la media livello
+      const mediaVincente = vincitore ? vincitore.livello : 0;
+      const mediaPerdente = perdente ? perdente.livello : 0;
+      const bonus = vincitore ? (mediaVincente - mediaPerdente) * 0.5 : 0;
+
+      // Calcola i punti per la partita
+
+
+      // Aggiorna i punteggi e lastMatch
+      if (vincitore) {
+        vincitore.punteggio += 3 + bonus;
+        vincitore.lastMatch = true;
+        perdente.lastMatch = false;
+
+        giocatoriMap[vincitore.nome] = vincitore;
+        giocatoriMap[perdente.nome] = perdente;
+      } else {
+        // Pareggio: nessun punto, lastMatch false
+        g1.lastMatch = false;
+        g2.lastMatch = false;
+
+        giocatoriMap[g1.nome] = g1;
+        giocatoriMap[g2.nome] = g2;
+      }
+    });
   }
 
-  // Calcolo bonus per handicap
-  const livelloSquadra1 = (squadra1[0].livello + squadra1[1].livello) / 2;
-  const livelloSquadra2 = (squadra2[0].livello + squadra2[1].livello) / 2;
-
-  let bonusSquadra1 = 0;
-  let bonusSquadra2 = 0;
-
-  if (punti1 > punti2 && livelloSquadra1 < livelloSquadra2) {
-    const diff = livelloSquadra2 - livelloSquadra1;
-    bonusSquadra1 = diff === 2 ? 1 : diff === 1 ? 0.5 : 0;
-  } else if (punti2 > punti1 && livelloSquadra2 < livelloSquadra1) {
-    const diff = livelloSquadra1 - livelloSquadra2;
-    bonusSquadra2 = diff === 2 ? 1 : diff === 1 ? 0.5 : 0;
-  }
-
-  return {
-    squadra1: {
-      giocatori: squadra1,
-      punti: puntiSquadra1 + bonusSquadra1,
-    },
-    squadra2: {
-      giocatori: squadra2,
-      punti: puntiSquadra2 + bonusSquadra2,
-    },
-  };
+  // Restituisce la mappa aggiornata dei giocatori
+  return giocatoriMap;
 }
+
 
 
 function salvaRisultati(sessione, formData) {
@@ -109,9 +186,15 @@ function salvaRisultati(sessione, formData) {
 function calcolaClassifica(partite) {
   const classifica = {};
 
-  partite.forEach((partita) => {
+  risultati.forEach((risultato, index) => {
+    const partita = req.session.partite[index];
+    
     if (!partita.risultato) return;
-
+    
+    partita.risultato = {
+      punti1: parseInt(risultato.punti1, 10),
+      punti2: parseInt(risultato.punti2, 10)
+    };
     const punteggi = calcolaPuntiPartita(partita);
 
     [punteggi.squadra1, punteggi.squadra2].forEach((squadra) => {
@@ -126,6 +209,7 @@ function calcolaClassifica(partite) {
         classifica[giocatore.id].punti += squadra.punti;
       });
     });
+
   });
 
   // Converti l'oggetto in array e ordina per punti decrescenti
@@ -167,7 +251,8 @@ function creaFasiFinali(sessione) {
 
 module.exports = {
   creaGiocatori,
-  generaPartite,
+  creaTurno,
+  calcolaPunteggi,
   salvaRisultati,
   calcolaClassifica,
   creaFasiFinali

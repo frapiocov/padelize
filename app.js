@@ -16,41 +16,38 @@ app.get('/', (req, res) => res.redirect('/setup'));
 
 app.get('/setup', (req, res) => res.render('setup'));
 
-app.post('/crea-torneo', (req, res) => {
-  req.session.giocatori = torneoUtils.creaGiocatori(req.body);
-  req.session.partite = torneoUtils.generaPartite(req.session.giocatori, 5);
-  res.redirect('/risultati');
+var turno = 1;
+
+app.post('/crea-turno', (req, res) => {
+  if(req.session.giocatori == undefined || req.session.giocatori.length === 0 || turno === 1) {
+    req.session.giocatori = torneoUtils.creaGiocatori(req.body);
+  }
+  console.log(req.session.giocatori);
+  req.session.partite = torneoUtils.creaTurno(req.session.giocatori, turno);
+  console.log(req.session.partite);
+  if(turno > 6){
+    res.redirect('/semifinali');
+  } else {
+    res.render('turno', { partite: req.session.partite, turno: turno });
+  }
+  turno++;
 });
 
-app.get('/risultati', (req, res) => {
-  res.render('index', {
-    giocatori: req.session.giocatori,
-    partite: req.session.partite
+app.post('/risultati', (req, res) => {
+  var partite = req.body.partite;
+  console.log(partite);
+  req.session.giocatori = torneoUtils.calcolaPunteggi(req.session.partite);
+
+  res.redirect('/classifica', {
+    giocatori: req.session.giocatori
   });
 });
 
-app.post('/salva-risultati', (req, res) => {
-  const risultati = req.body.risultati;
-
-  risultati.forEach((risultato, index) => {
-    const partita = req.session.partite[index];
-    partita.risultato = {
-      punti1: parseInt(risultato.punti1, 10),
-      punti2: parseInt(risultato.punti2, 10)
-    };
-  });
-  const partite = req.session.partite || [];
-  const classifica = torneoUtils.calcolaClassifica(partite);
-  req.session.classifica = classifica;
-  res.render('classifica', { classifica });
+app.post('/classifica', (req, res) => {
+  const giocatori = req.session.giocatori;
+  giocatori.sort((a, b) => b.punteggio - a.punteggio);
+  res.render('classifica', { giocatori: giocatori});
 });
-
-
-// Mostra classifica
-app.get('/classifica', (req, res) => {
-  res.render('classifica');
-});
-
 
 // Genera semifinali
 app.get('/semifinali', (req, res) => {

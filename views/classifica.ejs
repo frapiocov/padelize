@@ -1,43 +1,54 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>Padelize | Classifica</title>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="it">
 
-	</head>
-	<body class="p-4">
-		<div class="mb-3">
-		<h3>Classifica torneo 🥇🥈🥉</h3>
+<head>
+  <meta charset="UTF-8">
+  <title>Classifica Giocatori</title>
+  <!-- Includi Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
 
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col">Posizione</th>
-					<th scope="col">Nome</th>
-					<th scope="col">Livello</th>
-					<th scope="col">Punti</th>
-				</tr>
-			</thead>
-			<tbody>
-				<% classifica.forEach((giocatore, index) => { %>
-				<tr>
-					<td><%= index + 1 %></td>
-					<td><%= giocatore.nome %></td>
-					<td><%= giocatore.livello %></td>
-					<td><%= giocatore.punti %></td>
-				</tr>
-				<% }); %>
-			</tbody>
-		</table>
-		<p>Nella prossima fase saranno generati due tornei, Gold e Silver, rispettivamente per i primi 8 e per i secondi 8</p>
-		<a href="/semifinali">
-			<button class="btn btn-primary">Vai alle semifinali</button>
-		</a>
-		</div>
-	</body>
+<body class="p-4 bg-light text-dark">
+  <div class="container mt-5">
+    <h1 class="mb-4 text-center"><span class="bg-primary text-light px-1 rounded">Classifica giocatori </span>🥇🥈🥉</h1>
+    <table class="table table-striped table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Posizione</th>
+          <th>Nome</th>
+          <th>Livello</th>
+          <th>Punteggio</th>
+          <th>Ultima Partita</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% giocatori.forEach((giocatore, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= giocatore.nome %></td>
+          <td><%= giocatore.livello %></td>
+          <td><%= giocatore.punteggio %></td>
+          <td>
+            <% if (giocatore.lastMatch) { %>
+            <span class="badge bg-success">Vittoria</span>
+            <% } else { %>
+            <span class="badge bg-danger">Sconfitta</span>
+            <% } %>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <form action="/crea-turno" method="POST">
+      <button type="submit" class="btn btn-success">Prossimo turno</button>
+    </form>
+
+  </div>
+  <!-- Includi Bootstrap JS (opzionale) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>

@@ -1,69 +1,105 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Padelize | Setup</title>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-	</head>
-	<body class="p-4">
-		<h1>Gestisci il tuo torneo di Padel 🏆</h1>
-		<p>Inserisci i nomi dei 16 partecipanti e i rispettivi livelli</p>
+<head>
+  <title>Padelize</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-			<div id="giocatoriInputs" class="mb-3">
-				<form action="/crea-torneo" method="POST">
-					<% for(let i = 1; i <= 16; i++) { %>
-					<div class="mb-2">
-						<input
-              class="form-control-sm"
-							type="text"
-							name="giocatore<%= i %>"
-							placeholder="Nome giocatore <%= i %>"
-							required
-						/>
-						<select name="livello<%= i %>" class="form-select-sm" aria-label="Default select example">
-							<option selected value="1">Esordiente</option>
-							<option value="2">Intermedio</option>
-							<option value="3">Alto</option>
-						</select>
-					</div>
-					<% } %>
-					<button class="btn btn-primary">Avvia torneo</button>
-				</form>
-			</div>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
 
-			<div class="mb-3">
-				<p class="text-muted">
-					NB: Assicurati che i nomi siano univoci.
-				</p>
-				<h4>Regole e Modalità 📑</h4>
-				<p>
-					Tutti i match si svolgono in doppio.
-          Ogni partecipante ha un nome e un livello (esordiente, intermedio, alto). Tutte le coppie giocano su 4 campi, i team si
-					rimescolano a ogni turno. <br>
-          
-          <h5>Gestione punteggi</h5>
+<body class="p-4 bg-light text-dark">
+  <h1><span class="bg-primary text-light px-1 rounded">Padelize</span> | Gestisci il tuo torneo di Padel 🎾</h1>
+  <p>Il torneo sarà gestito in stile <b>King of The Court</b>.
+  </p>
 
-          <b>Vittoria netta</b> (&gt;=6 punti): 3 al vincente, 0 al perdente <br> <b>Vittoria stretta</b> (&lt;6 punti): 2 vincente, 1 perdente <br> 
-          <b>Pareggio</b>: 1 punto a testa <br>
-					<b>Bonus handicap</b>: +1.5 ad ogni membro della coppia vincente in caso di differenza dei livelli (es. vittoria del livello 1 contro 3 → +1.5).<br><br>
-					
-          <h5>Fasi finali</h5>
-					Conclusi tutti i match verrà generata la classifica individuale. I primi 8 vanno al <b>Round Gold</b>, gli
-					altri 8 al <b>Round Silver</b>. Entrambe i round sono composti da 2 semifinali e 1 finale che ne decreta la coppia vincente.
-				</p>
-			</div>
-		</form>
+  <div class="mb-3">
+    <h4><span class="bg-primary text-light px-1 rounded">Regole e Modalità 📑</span></h4>
+    <p>
+      Tutti i match si svolgono in doppio.
+      Ogni partecipante ha un nome e un livello (da 1 a 4) che lo contraddistinguono. La prima fase di gioco si compone di <b>6 turni</b>, ogni turno dura 20 minuti. Tutte le coppie, divise secondo le regole sottostanti, giocano su 4 campi (A, B, C, D). I team si rimescolano ad ogni turno.<br>
 
-		<hr>
-		<p>
-			All the code is open source and available on <a href="https://github.com/frapiocov/padelize" class="">frapiocov/padelize</a>. Feel free to contribute or report issues.
-		</p>
-		<!--  
+    <h5>Gestione punteggi 💯</h5>
+    <ul>
+      <li><b>Vittoria netta</b> (&gt;=6 punti): 3 al vincente + bonus, 0 al perdente</li>
+      <li><b>Vittoria stretta</b> (&lt;6 punti): 2 vincente + bonus, 1 perdente</li>
+    </ul>
+    <b>Bonus</b> calcolato come descritto nella prossima sezione.<br><br>
+
+    <h5>Calcolo Bonus ➕</h5>
+    Il livello di ogni giocatore viene utilizzato per il calcolo dell'<b>handicap bonus</b>. Esempio: La coppia composta da A (Liv. 1) + B (Liv. 2) batte C + D (Liv. 4)
+    <ul>
+      <li>Media avversari = 4</li>
+      <li>A → Bonus = (4 - 1) x 0.5 = 1.5</li>
+      <li>B → Bonus = (4 - 2) x 0.5 = 1.0</li>
+      <li>Totale punti = 3 (vittoria) + bonus</li>
+    </ul>
+
+    <h5>Divisione dei campi 🍀</h5>
+    <ul>
+      <li>Campo A: giocatori di livello 4</li>
+      <li>Campo B: giocatori di livello 3 e 2</li>
+      <li>Campo C: giocatori di livello 3 e 2</li>
+      <li>Campo D: giocatori di livello 1</li>
+    </ul>
+    In caso di vittoria i giocatori della coppia accedono al campo superiore, in caso di sconfitta al campo inferiore.<br><br>
+
+    <h5>Fasi finali 🏆</h5>
+    Conclusi tutti i match verrà generata la classifica individuale. I primi 8 vanno al <b>Round Gold</b>, gli
+    altri 8 al <b>Round Silver</b>. Entrambe i round sono composti da 2 semifinali e 1 finale che ne decreta la coppia vincente.
+    </p>
+  </div>
+
+  <div id="giocatoriInputs" class="mb-3">
+    <h5>Inserisci i partecipanti 👥</h5>
+    <p>
+      Inserisci i nomi dei 16 partecipanti e i rispettivi livelli nella sezione sottostante.
+      I livelli dei giocatori sono da 1(esordiente) a 4(esperto).<br>
+      <span class="bg-warning text-dark px-1 rounded">N.B. Assicurati che i nomi siano univoci</span>
+    </p>
+    <form action="/crea-turno" method="POST">
+      <div class="row">
+        <!-- Colonna sinistra -->
+        <div class="col-md-6">
+          <% for(let i = 1; i <= 8; i++) { %>
+          <div class="mb-2 d-flex align-items-center gap-2">
+            <input class="form-control form-control-sm" type="text" name="giocatore<%= i %>" placeholder="Nome giocatore <%= i %>" required />
+            <select name="livello<%= i %>" class="form-select form-select-sm" aria-label="Default select example">
+              <option selected value="1">Liv. 1</option>
+              <option value="2">Liv. 2</option>
+              <option value="3">Liv. 3</option>
+              <option value="4">Liv. 4</option>
+            </select>
+          </div>
+          <% } %>
+        </div>
+
+        <!-- Colonna destra -->
+        <div class="col-md-6">
+          <% for(let i = 9; i <= 16; i++) { %>
+          <div class="mb-2 d-flex align-items-center gap-2">
+            <input class="form-control form-control-sm" type="text" name="giocatore<%= i %>" placeholder="Nome giocatore <%= i %>" required />
+            <select name="livello<%= i %>" class="form-select form-select-sm" aria-label="Default select example">
+              <option selected value="1">Liv. 1</option>
+              <option value="2">Liv. 2</option>
+              <option value="3">Liv. 3</option>
+              <option value="4">Liv. 4</option>
+            </select>
+          </div>
+          <% } %>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-md d-block mx-auto mt-3">Avvia torneo</button>
+    </form>
+  </div>
+
+
+  <hr>
+  <p>
+    All the code is open source and available on <a href="https://github.com/frapiocov/padelize" class="">frapiocov/padelize</a>. Feel free to contribute or report issues.
+  </p>
+  <!--  
   <script>
     const numGiocatoriInput = document.getElementById('numGiocatori');
     const container = document.getElementById('giocatoriInputs');
@@ -82,5 +118,6 @@
     });
   </script>
   -->
-	</body>
+</body>
+
 </html>

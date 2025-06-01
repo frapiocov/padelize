@@ -16,7 +16,7 @@
         <div class="mb-3">
 
         
-        <form action="/salva-risultati" method="POST">
+        <form action="/classifica" method="POST">
     <% 
       let turnoCorrente = 0;
       partite.forEach((partita, index) => {
@@ -49,7 +49,7 @@
     <% }); %>
     </table>
     <br>
-    <button class="btn btn-primary" type="submit">Salva Risultati</button>
+    <button class="btn btn-primary" type="submit">Calcola classifica</button>
   </form>
   </div>
 	</body>
