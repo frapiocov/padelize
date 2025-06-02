@@ -16,19 +16,18 @@ app.get('/', (req, res) => res.redirect('/setup'));
 
 app.get('/setup', (req, res) => res.render('setup'));
 
-var turno = 1;
-
 app.post('/crea-turno', (req, res) => {
-  if(req.session.giocatori == undefined || req.session.giocatori.length === 0 || turno === 1) {
+  if(req.session.giocatori == undefined || req.session.giocatori.length === 0 || req.session.turno === 1) {
     req.session.giocatori = torneoUtils.creaGiocatori(req.body);
   }
+  var turno = req.session.turno || 1;
   req.session.partite = torneoUtils.creaTurno(req.session.giocatori, turno);
   if(turno > 6){
     res.redirect('/semifinali');
   } else {
     res.render('turno', { partite: req.session.partite, turno: turno });
   }
-  turno++;
+  req.session.turno = turno + 1;
 });
 
 app.post('/classifica', (req, res) => {
@@ -131,6 +130,7 @@ app.post('/finale/risultati', (req, res) => {
 
 // Mostra vincitori
 app.get('/premiazione', (req, res) => {
+  req.session.turno = 1; // Reset turno per il prossimo torneo
   res.render('premiazione', { vincitori: req.session.vincitori });
 });
 
