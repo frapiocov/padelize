@@ -22,9 +22,7 @@ app.post('/crea-turno', (req, res) => {
   if(req.session.giocatori == undefined || req.session.giocatori.length === 0 || turno === 1) {
     req.session.giocatori = torneoUtils.creaGiocatori(req.body);
   }
-  console.log(req.session.giocatori);
   req.session.partite = torneoUtils.creaTurno(req.session.giocatori, turno);
-  console.log(req.session.partite);
   if(turno > 6){
     res.redirect('/semifinali');
   } else {
@@ -33,30 +31,30 @@ app.post('/crea-turno', (req, res) => {
   turno++;
 });
 
-app.post('/risultati', (req, res) => {
-  var partite = req.body.partite;
-  console.log(partite);
-  req.session.giocatori = torneoUtils.calcolaPunteggi(req.session.partite);
-
-  res.redirect('/classifica', {
-    giocatori: req.session.giocatori
-  });
-});
-
 app.post('/classifica', (req, res) => {
-  const giocatori = req.session.giocatori;
+  const response = req.body;
+  let risultato = response.risultato;
+  var partite = req.session.partite;
+  
+  // aggiorna le partite con i risultati
+  for (let campo in risultato) {
+    partite[campo].punteggio = risultato[campo];
+  }
+  var giocatori = req.session.giocatori;
+  giocatori = torneoUtils.calcolaPunteggi(partite);
   giocatori.sort((a, b) => b.punteggio - a.punteggio);
-  res.render('classifica', { giocatori: giocatori});
+  req.session.giocatori = giocatori;
+  res.render('classifica', { giocatori: giocatori });
 });
 
 // Genera semifinali
 app.get('/semifinali', (req, res) => {
-  const classifica = req.session.classifica;
-  if (!classifica) return res.redirect('/classifica');
+  var giocatori = req.session.giocatori;
 
-  const { roundGold, roundSilver } = suddividiInRound(classifica);
-  const semifinaliGold = creaSemifinali(roundGold);
-  const semifinaliSilver = creaSemifinali(roundSilver);
+  const { roundGold, roundSilver } = torneoUtils.suddividiInRound(giocatori);
+
+  const semifinaliGold = torneoUtils.creaSemifinali(roundGold);
+  const semifinaliSilver = torneoUtils.creaSemifinali(roundSilver);
 
   req.session.fasiFinali = {
     roundGold: { semifinali: semifinaliGold },
@@ -139,23 +137,6 @@ app.get('/premiazione', (req, res) => {
 app.listen(PORT, () => console.log('webapp avviata su http://localhost:3000'));
 
 
-function suddividiInRound(classifica) {
-  const roundGold = classifica.slice(0, 8);
-  const roundSilver = classifica.slice(8, 16);
-  return { roundGold, roundSilver };
-}
 
-function creaSemifinali(giocatori) {
-  return [
-    {
-      squadra1: [giocatori[0], giocatori[3]],
-      squadra2: [giocatori[1], giocatori[2]],
-    },
-    {
-      squadra1: [giocatori[4], giocatori[7]],
-      squadra2: [giocatori[5], giocatori[6]],
-    },
-  ];
-}
 
 // calcolaClassifica già discusso in precedenza

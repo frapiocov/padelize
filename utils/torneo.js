@@ -1,5 +1,3 @@
-
-
 function creaGiocatori(body) {
   const giocatori = [];
   for (let i = 1; i <= 16; i++) {
@@ -12,7 +10,6 @@ function creaGiocatori(body) {
   }
   return giocatori;
 }
-
 
 function creaTurno(giocatori, turnoCorrente = 1) {
   // Raggruppa i giocatori per livello
@@ -113,75 +110,70 @@ function creaTurno(giocatori, turnoCorrente = 1) {
 }
 
 function calcolaPunteggi(partite) {
-  // Crea un dizionario con i giocatori
-  const giocatoriMap = {};
+  var newGiocatori = [];
   const vittNetta = 3; // Punti per vittoria netta
   const vittStretta = 2; // Punti per vittoria stretta
 
   // Scansiona tutte le partite
   for (const [campo, {coppie, punteggio}] of Object.entries(partite)) {
-    coppie.forEach((coppia, index) => {
-      // Recupera i risultati numerici
-      const risultatoPartita = partite[campo]?.[index];
-      if (!risultatoPartita || coppia.length !== 2) {
-        // Partite senza avversario: vittoria automatica con 3 punti e lastMatch vincente
-        const giocatore = coppia[0];
-        giocatore.punteggio += 3;
-        giocatore.lastMatch = true;
-        giocatoriMap[giocatore.nome] = giocatore;
-        return;
-      }
+          
+      var punti1 = parseInt(punteggio[0]);
+      var punti2 = parseInt(punteggio[1]);
 
-      const [g1, g2] = coppia;
-      const punti1 = parseInt(punteggio[0]);
-      const punti2 = parseInt(punteggio[1]);
+      // calcolo punti vincente
+      var puntiVincitore = 0;
+      var puntiPerdente = 0;
 
       // Calcola la squadra vincente
-      let vincitore, perdente;
+      let vincitori, perdenti;
       if (punti1 >= punti2) {
-        vincitore = g1;
-        perdente = g2;
+        vincitori = coppie[0];
+        perdenti = coppie[1];
+        if(punti1 > punti2 + 6) {
+          puntiVincitore = vittNetta;
+          puntiPerdente = 0; // Vittoria netta
+        } else {
+          puntiVincitore = vittStretta; // Vittoria stretta
+          puntiPerdente = 1; // Punti per la squadra perdente
+        }
       } else if (punti2 > punti1) {
-        vincitore = g2;
-        perdente = g1;
+        vincitori = coppie[1];
+        perdenti = coppie[0];
+        if(punti2 > punti1 + 6) {
+          puntiVincitore = vittNetta;
+          puntiPerdente = 0; // Vittoria netta
+        } else {
+          puntiVincitore = vittStretta; // Vittoria stretta
+          puntiPerdente = 1; // Punti per la squadra perdente
+        }
       }
 
       // Calcola la media livello
-      const mediaVincente = vincitore ? vincitore.livello : 0;
-      const mediaPerdente = perdente ? perdente.livello : 0;
-      const bonus = vincitore ? (mediaVincente - mediaPerdente) * 0.5 : 0;
+      const mediaVincente = vincitori ? vincitori[0].livello + vincitori[1].livello : 0;
+      const mediaPerdente = perdenti ? perdenti[0].livello + perdenti[1].livello : 0;
+      const bonus = vincitori ? (mediaVincente - mediaPerdente) * 0.5 : 0;
 
-      // Calcola i punti per la partita
+      // aggiorna punteggi
+        vincitori[0].punteggio += puntiVincitore + bonus;
+        vincitori[1].punteggio += puntiVincitore + bonus;
+        vincitori[0].lastMatch = true;
+        vincitori[1].lastMatch = true;
 
+        perdenti[0].punteggio += puntiPerdente;
+        perdenti[1].punteggio += puntiPerdente;
+        perdenti[0].lastMatch = false;
+        perdenti[1].lastMatch = false;
 
-      // Aggiorna i punteggi e lastMatch
-      if (vincitore) {
-        vincitore.punteggio += 3 + bonus;
-        vincitore.lastMatch = true;
-        perdente.lastMatch = false;
-
-        giocatoriMap[vincitore.nome] = vincitore;
-        giocatoriMap[perdente.nome] = perdente;
-      } else {
-        // Pareggio: nessun punto, lastMatch false
-        g1.lastMatch = false;
-        g2.lastMatch = false;
-
-        giocatoriMap[g1.nome] = g1;
-        giocatoriMap[g2.nome] = g2;
-      }
-    });
+        newGiocatori.push(vincitori[0]);
+        newGiocatori.push(vincitori[1]);
+        newGiocatori.push(perdenti[0]);
+        newGiocatori.push(perdenti[1]);  
   }
 
-  // Restituisce la mappa aggiornata dei giocatori
-  return giocatoriMap;
+  // Restituisce l'array aggiornato dei giocatori
+  return newGiocatori;
 }
 
-
-
-function salvaRisultati(sessione, formData) {
-  // Aggiorna punteggi e applica handicap in base ai risultati inseriti
-}
 
 function calcolaClassifica(partite) {
   const classifica = {};
@@ -253,7 +245,8 @@ module.exports = {
   creaGiocatori,
   creaTurno,
   calcolaPunteggi,
-  salvaRisultati,
   calcolaClassifica,
+  creaSemifinali,
+  suddividiInRound,
   creaFasiFinali
 };

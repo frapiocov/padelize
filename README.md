@@ -8,8 +8,8 @@ hosted on [render](https://render.com) |
 
 ### 🚀 Features
 
-- Add players and assign their skill levels: Beginner, Intermediate, Advanced
-- Random match generation with rotation of teams across multiple rounds
+- Add players and assign their skill levels from 1(beginner) to 4(pro)
+- Random match generation with rotation of teams across multiple rounds and 4 fields
 - Handicap-based scoring system depending on player skill differences
 - Group stage with multiple courts playing simultaneously
 - Dynamic point calculation based on match outcome
@@ -17,7 +17,7 @@ hosted on [render](https://render.com) |
 - Semifinals and finals for both rounds
 - Automatic winner declaration and trophy screen
 - Minimal, responsive UI with Bootstrap styling
-- Data is stored in **session** memory only (no persistence)
+- Data is stored in **session** memory only (no persistence for now)
 
 ---
 
@@ -34,12 +34,10 @@ hosted on [render](https://render.com) |
 All games are doubles. Players are grouped and rotated each round.
 
 Points:
-- Win by 6+: 3 points to winner, 0 to loser
-- Win by <6: 2 points to winner, 1 to loser
-- Draw: 1 point each
-- 1.5 point bonus for teamwork and rotation
+- Win by 6+: 3 points to winner + bonus, 0 to loser
+- Win by <6: 2 points to winner + bonus, 1 to loser
 
-Handicap system adjusts score value depending on opponent levels.
+Handicap system adjusts score value depending on opponent levels: (winner average level - losers average level) * 0.5
 
 ### 🧠 Technologies Used
 - Node.js
