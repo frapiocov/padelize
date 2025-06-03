@@ -19,7 +19,7 @@
       Le semifinali sono composte da 2 round: <b>Round Gold</b> e <b>Round Silver</b>.
       Ogni round è composto da 2 semifinali e 1 finale che ne decreta la coppia vincente.
       I risultati delle semifinali verranno utilizzati per determinare le coppie finaliste.</p>
-
+    <form action="/finali" method="post">
     <div class="mb-3">
       <div class="card mb-3">
         <div class="card-header text-white bg-warning">
@@ -28,28 +28,28 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
             <div class="mb-2">
-              squadra 1 <span class="bg-success text-light px-1 rounded"">VS</span> squadra 2
-                </div>
-                <div class=" d-flex mb-2 row">
-                <div class="col">
-                  <input type="number" name="risultato" class="form-control me-2" placeholder="Punteggio prima coppia" min="0" required>
-                </div>
-                <div class="col">
-                  <input type="number" name="risultato" class="form-control me-2" placeholder="Punteggio seconda coppia" min="0" required>
-                </div>
+              <%= gold[0].squadra1[0].nome %> &amp; <%= gold[0].squadra1[1].nome %> <span class="bg-success text-light px-1 rounded">VS</span> <%= gold[0].squadra2[0].nome %> &amp; <%= gold[0].squadra2[1].nome %>
+            </div>
+            <div class=" d-flex mb-2 row">
+              <div class="col">
+                <input type="number" name="risultato[0]" class="form-control me-2" placeholder="Punteggio prima coppia" min="0" required>
+              </div>
+              <div class="col">
+                <input type="number" name="risultato[1]" class="form-control me-2" placeholder="Punteggio seconda coppia" min="0" required>
+              </div>
             </div>
           </li>
           <li class="list-group-item">
             <div class="mb-2">
-              squadra 1 <span class="bg-success text-light px-1 rounded"">VS</span> squadra 2
-                </div>
-                <div class=" d-flex mb-2 row">
-                <div class="col">
-                  <input type="number" name="risultato" class="form-control me-2" placeholder="Punteggio prima coppia" min="0" required>
-                </div>
-                <div class="col">
-                  <input type="number" name="risultato" class="form-control me-2" placeholder="Punteggio seconda coppia" min="0" required>
-                </div>
+              <%= gold[1].squadra1[0].nome %> &amp; <%= gold[1].squadra1[1].nome %> <span class="bg-success text-light px-1 rounded">VS</span> <%= gold[1].squadra2[0].nome %> &amp; <%= gold[1].squadra2[1].nome %>
+            </div>
+            <div class=" d-flex mb-2 row">
+              <div class="col">
+                <input type="number" name="risultato[2]" class="form-control me-2" placeholder="Punteggio prima coppia" min="0" required>
+              </div>
+              <div class="col">
+                <input type="number" name="risultato[3]" class="form-control me-2" placeholder="Punteggio seconda coppia" min="0" required>
+              </div>
             </div>
           </li>
         </ul>
@@ -64,27 +64,27 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
             <div class="mb-2">
-              squadra 1 <span class="bg-success text-light px-1 rounded"">VS</span> squadra 2
+               <%= silver[0].squadra1[0].nome %> &amp; <%= silver[0].squadra1[1].nome %> <span class="bg-success text-light px-1 rounded">VS</span> <%= silver[0].squadra2[0].nome %> &amp; <%= silver[0].squadra2[1].nome %>
                 </div>
                 <div class=" d-flex mb-2 row">
                 <div class="col">
-                  <input type="number" name="risultato" class="form-control me-2" placeholder="Punteggio prima coppia" min="0" required>
+                  <input type="number" name="risultato[4]" class="form-control me-2" placeholder="Punteggio prima coppia" min="0" required>
                 </div>
                 <div class="col">
-                  <input type="number" name="risultato" class="form-control me-2" placeholder="Punteggio seconda coppia" min="0" required>
+                  <input type="number" name="risultato[5]" class="form-control me-2" placeholder="Punteggio seconda coppia" min="0" required>
                 </div>
             </div>
           </li>
           <li class="list-group-item">
             <div class="mb-2">
-              squadra 1 <span class="bg-success text-light px-1 rounded"">VS</span> squadra 2
+               <%= silver[1].squadra1[0].nome %> &amp; <%= silver[1].squadra1[1].nome %> <span class="bg-success text-light px-1 rounded">VS</span> <%= silver[1].squadra2[0].nome %> &amp; <%= silver[1].squadra2[1].nome %>
                 </div>
                 <div class=" d-flex mb-2 row">
                 <div class="col">
-                  <input type="number" name="risultato" class="form-control me-2" placeholder="Punteggio prima coppia" min="0" required>
+                  <input type="number" name="risultato[6]" class="form-control me-2" placeholder="Punteggio prima coppia" min="0" required>
                 </div>
                 <div class="col">
-                  <input type="number" name="risultato" class="form-control me-2" placeholder="Punteggio seconda coppia" min="0" required>
+                  <input type="number" name="risultato[7]" class="form-control me-2" placeholder="Punteggio seconda coppia" min="0" required>
                 </div>
             </div>
           </li>
@@ -93,8 +93,9 @@
     </div>
 
     <div class="text-center">
-      <button type="submit" class="btn btn-primary btn-md mt-3">Salva Risultati</button>
+      <button type="submit" class="btn btn-primary btn-md mt-3">Accedi alle finali</button>
     </div>
+    </form>
   </div>
 </body>
 

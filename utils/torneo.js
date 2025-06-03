@@ -227,18 +227,41 @@ function creaSemifinali(giocatori) {
   return [semifinale1, semifinale2];
 }
 
-function creaFinale(vincitori) {
-  return {
-    squadra1: vincitori[0],
-    squadra2: vincitori[1],
-  };
-}
+function creaFinali(risultati, semifinali) {
+  var vincitoriGold = [];
+  var vincitoriSilver = [];
+  // prima semifinale
+  if(risultati[0] > risultati[1]) {
+    vincitoriGold.push(semifinali.gold[0].squadra1);
+  } else {
+    vincitoriGold.push(semifinali.gold[0].squadra2);
+  }
 
-function creaFasiFinali(sessione) {
-  const ordinati = calcolaClassifica(sessione);
-  const gold = ordinati.slice(0, 8);
-  const silver = ordinati.slice(8);
-  return { gold, silver };
+  //seconda semifinale
+  if(risultati[2] > risultati[3]) {
+    vincitoriGold.push(semifinali.gold[1].squadra1);
+  } else {
+    vincitoriGold.push(semifinali.gold[1].squadra2);
+  }
+
+  // terza semifinale
+  if(risultati[4] > risultati[5]) {
+    vincitoriSilver.push(semifinali.silver[0].squadra1);
+  } else {
+    vincitoriSilver.push(semifinali.silver[0].squadra2);
+  }
+
+  // quarta semifinale
+  if(risultati[6] > risultati[7]) {
+    vincitoriSilver.push(semifinali.silver[1].squadra1);
+  } else {
+    vincitoriSilver.push(semifinali.silver[1].squadra2);
+  }
+
+  return {
+    gold: vincitoriGold,
+    silver: vincitoriSilver
+  };
 }
 
 module.exports = {
@@ -248,5 +271,5 @@ module.exports = {
   calcolaClassifica,
   creaSemifinali,
   suddividiInRound,
-  creaFasiFinali
+  creaFinali
 };

@@ -11,9 +11,7 @@ app.use(session({ secret: 'torneo123', resave: false, saveUninitialized: true })
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Rotte principali
 app.get('/', (req, res) => res.redirect('/setup'));
-
 app.get('/setup', (req, res) => res.render('setup'));
 
 app.post('/crea-turno', (req, res) => {
@@ -55,9 +53,9 @@ app.get('/semifinali', (req, res) => {
   const semifinaliGold = torneoUtils.creaSemifinali(roundGold);
   const semifinaliSilver = torneoUtils.creaSemifinali(roundSilver);
 
-  req.session.fasiFinali = {
-    roundGold: { semifinali: semifinaliGold },
-    roundSilver: { semifinali: semifinaliSilver }
+  req.session.semifinali = {
+    gold: semifinaliGold ,
+    silver: semifinaliSilver
   };
 
   res.render('semifinali', {
@@ -67,24 +65,14 @@ app.get('/semifinali', (req, res) => {
 });
 
 // Inserimento risultati semifinali
-app.post('/semifinali/risultati', (req, res) => {
-  const risultati = req.body; // ricevi es: gold1a, gold1b, gold2a, ecc.
-  const fasi = req.session.fasiFinali;
+app.post('/finali', (req, res) => {
+  const risultati = req.body;
+  var semifinali = req.session.semifinali;
 
-  // Simula vincitori (puoi usare funzione calcolaPuntiPartita)
-  fasi.roundGold.finalisti = [fasi.roundGold.semifinali[0].squadra1, fasi.roundGold.semifinali[1].squadra2];
-  fasi.roundSilver.finalisti = [fasi.roundSilver.semifinali[0].squadra2, fasi.roundSilver.semifinali[1].squadra1];
+  // Controlla i vincitori delle semifinali
+  var vincitori = torneoUtils.creaFinali(risultati, semifinali);
 
-  res.redirect('/finale');
-});
-
-// Mostra finale
-app.get('/finale', (req, res) => {
-  const fasi = req.session.fasiFinali;
-  res.render('finale', {
-    gold: fasi.roundGold.finalisti,
-    silver: fasi.roundSilver.finalisti
-  });
+  res.render('finale', { vincitori: vincitori });
 });
 
 // Inserimento vincitori finale
