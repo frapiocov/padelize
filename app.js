@@ -1,130 +1,130 @@
-const express = require('express');
-const session = require('express-session');
-const path = require('path');
-const torneoUtils = require('./utils/torneo');
+const express = require("express");
+const session = require("express-session");
+const MemoryStore = require("memorystore")(session);
+const path = require("path");
+const torneoUtils = require("./utils/torneo");
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-app.use(session({ secret: 'torneo123', resave: false, saveUninitialized: true }));
+app.use(express.json());
+app.use(express.static("public"));
+app.use(
+	session({
+		cookie: { maxAge: 172800000 },
+		store: new MemoryStore({
+			checkPeriod: 172800000, // prune expired entries every 48h
+		}),
+		secret: "PADEL",
+		resave: false,
+		saveUninitialized: true,
+	})
+);
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+// Inizializza NeDB
+// const db = new Datastore({ filename: 'database.db', autoload: true });
 
-app.get('/', (req, res) => res.redirect('/setup'));
-app.get('/setup', (req, res) => res.render('setup'));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
-app.post('/crea-turno', (req, res) => {
-  if(req.session.giocatori == undefined || req.session.giocatori.length === 0 || req.session.turno === 1) {
-    req.session.giocatori = torneoUtils.creaGiocatori(req.body);
-  }
-  var turno = req.session.turno || 1;
-  req.session.partite = torneoUtils.creaTurno(req.session.giocatori, turno);
-  if(turno > 6){
-    res.redirect('/semifinali');
-  } else {
-    res.render('turno', { partite: req.session.partite, turno: turno });
-  }
+app.get("/", (req, res) => res.redirect("/setup"));
+app.get("/setup", (req, res) => res.render("setup"));
+
+app.post("/crea-turno", (req, res) => {
+	if (
+		req.session.giocatori == undefined ||
+		req.session.giocatori.length === 0 ||
+		req.session.turno === 1
+	) {
+		req.session.giocatori = torneoUtils.creaGiocatori(req.body);
+	}
+	var turno = req.session.turno || 1;
+
+  var partite = req.session.partite || {};
+
+	req.session.partite = torneoUtils.creaTurno(req.session.giocatori, turno, partite);
+  
+  if (turno > 6) {
+		res.redirect("/semifinali");
+	} else {
+		res.render("turno", { partite: req.session.partite, turno: turno });
+	}
+	
   req.session.turno = turno + 1;
 });
 
-app.post('/classifica', (req, res) => {
-  const response = req.body;
-  let risultato = response.risultato;
-  var partite = req.session.partite;
-  
-  // aggiorna le partite con i risultati
-  for (let campo in risultato) {
-    partite[campo].punteggio = risultato[campo];
-  }
-  var giocatori = req.session.giocatori;
-  giocatori = torneoUtils.calcolaPunteggi(partite);
-  giocatori.sort((a, b) => b.punteggio - a.punteggio);
-  req.session.giocatori = giocatori;
-  res.render('classifica', { giocatori: giocatori });
+app.post("/classifica", (req, res) => {
+	const response = req.body;
+	let risultato = response.risultato;
+	var partite = req.session.partite;
+
+	// aggiorna le partite con i risultati
+	for (let campo in risultato) {
+		partite[campo].punteggio = risultato[campo];
+	}
+	var giocatori = req.session.giocatori;
+	giocatori = torneoUtils.calcolaPunteggi(partite);
+	giocatori.sort((a, b) => b.punteggio - a.punteggio);
+	req.session.giocatori = giocatori;
+	res.render("classifica", { giocatori: giocatori });
 });
 
 // Genera semifinali
-app.get('/semifinali', (req, res) => {
-  var giocatori = req.session.giocatori;
+app.get("/semifinali", (req, res) => {
+	var giocatori = req.session.giocatori;
 
-  const { roundGold, roundSilver } = torneoUtils.suddividiInRound(giocatori);
+	const { roundGold, roundSilver } = torneoUtils.suddividiInRound(giocatori);
 
-  const semifinaliGold = torneoUtils.creaSemifinali(roundGold);
-  const semifinaliSilver = torneoUtils.creaSemifinali(roundSilver);
+	const semifinaliGold = torneoUtils.creaSemifinali(roundGold);
+	const semifinaliSilver = torneoUtils.creaSemifinali(roundSilver);
 
-  req.session.semifinali = {
-    gold: semifinaliGold ,
-    silver: semifinaliSilver
-  };
+	req.session.semifinali = {
+		gold: semifinaliGold,
+		silver: semifinaliSilver,
+	};
 
-  res.render('semifinali', {
-    gold: semifinaliGold,
-    silver: semifinaliSilver
-  });
+	res.render("semifinali", {
+		gold: semifinaliGold,
+		silver: semifinaliSilver,
+	});
 });
 
 // Inserimento risultati semifinali
-app.post('/finali', (req, res) => {
-  const risultati = req.body;
-  var semifinali = req.session.semifinali;
+app.post("/finali", (req, res) => {
+	const risultati = req.body;
+	var semifinali = req.session.semifinali;
 
-  // Controlla i vincitori delle semifinali
-  var vincitori = torneoUtils.creaFinali(risultati, semifinali);
+	console.log("Risultati semifinali:", risultati);
 
-  res.render('finale', { vincitori: vincitori });
+	// Controlla i vincitori delle semifinali
+	var vincitori = torneoUtils.creaFinali(risultati, semifinali);
+
+	res.render("finale", { vincitori: vincitori });
 });
 
 // Inserimento vincitori finale
-app.post('/finale/risultati', (req, res) => {
-  const {
-    goldA, goldB,
-    silverA, silverB
-  } = req.body;
+app.post("/premiazione", (req, res) => {
+	const risultati = req.body;
+	const partecipanti = req.session.vincitori;
 
-  const fasi = req.session.fasiFinali;
-  if (!fasi || !fasi.roundGold || !fasi.roundSilver) {
-    return res.redirect('/semifinali');
-  }
+	console.log("Partecipanti vincitori:", risultati);
 
-  // Recupero squadre finaliste
-  const finaleGold = fasi.roundGold.finalisti;
-  const finaleSilver = fasi.roundSilver.finalisti;
+	const punteggioGoldA = parseInt(risultati[0]);
+	const punteggioGoldB = parseInt(risultati[1]);
+	const punteggioSilverA = parseInt(risultati[2]);
+	const punteggioSilverB = parseInt(risultati[3]);
 
-  const punteggioGoldA = parseInt(goldA);
-  const punteggioGoldB = parseInt(goldB);
-  const punteggioSilverA = parseInt(silverA);
-  const punteggioSilverB = parseInt(silverB);
+	// Determina vincitori gold
+	const vincitoriGold =
+		punteggioGoldA > punteggioGoldB ? partecipanti.gold[1] : partecipanti.gold[0];
 
-  // Determina vincitori gold
-  const vincitoriGold = punteggioGoldA > punteggioGoldB
-    ? finaleGold[0]
-    : finaleGold[1];
+	// Determina vincitori silver
+	const vincitoriSilver =
+		punteggioSilverA > punteggioSilverB ? partecipanti.silver[1] : partecipanti.silver[0];
 
-  // Determina vincitori silver
-  const vincitoriSilver = punteggioSilverA > punteggioSilverB
-    ? finaleSilver[0]
-    : finaleSilver[1];
-
-  // Salva in sessione
-  req.session.vincitori = {
-    gold: vincitoriGold,
-    silver: vincitoriSilver
-  };
-
-  res.redirect('/premiazione');
+	res.render("premiazione", {
+		gold: vincitoriGold,
+		silver: vincitoriSilver,
+	});
 });
 
-
-// Mostra vincitori
-app.get('/premiazione', (req, res) => {
-  req.session.turno = 1; // Reset turno per il prossimo torneo
-  res.render('premiazione', { vincitori: req.session.vincitori });
-});
-
-app.listen(PORT, () => console.log('webapp avviata su http://localhost:3000'));
-
-
-
-
-// calcolaClassifica già discusso in precedenza
+app.listen(PORT, () => console.log("webapp avviata su http://localhost:3000"));

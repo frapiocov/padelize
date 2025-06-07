@@ -10,20 +10,23 @@
 </head>
 
 <body class="p-4 ">
-  <div class="mb-3 d-flex align-items-center justify-content-center">
-<h1>🏆 <span class="bg-primary text-light px-1 rounded">Vincitori Torneo</span> 🏆</h1>
 
-  <h2><span class="bg-warning text-dark px-1 rounded">Gold Round</span></h2>
-  <p>
-    <strong><%= vincitori.gold[0] %></strong> &amp; <strong><%= vincitori.gold[1] %></strong>
-  </p>
-  <hr>
-  <h2><span class="bg-warning text-dark px-1 rounded">Silver Round</span></h2>
-  <p>
-    <strong><%= vincitori.silver[0] %></strong> &amp; <strong><%= vincitori.silver[1] %></strong>
-  </p>
-
-  <a class=" btn btn-secondary" href="/">Nuovo torneo</a>
+  <div class="m-3 d-flex flex-column align-items-center justify-content-center gap-2">
+    <h1>🏆 <span class="bg-primary text-light px-1 rounded">Vincitori Torneo</span> 🏆</h1>
+    <hr>
+    <h2><span class="bg-warning text-dark px-1 rounded">Gold Round</span></h2>
+    <p>
+      <strong><%= gold[0].nome %></strong> &amp; <strong><%= gold[1].nome %></strong>
+    </p>
+    <h2><span class="bg-warning text-dark px-1 rounded">Silver Round</span></h2>
+    <p>
+      <strong><%= silver[0].nome %></strong> &amp; <strong><%= silver[1].nome %></strong>
+    </p>
+    <div>
+      <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHR4N2J6YW9zaG9oeHdnZHNrZ3VmN2RvYTJuYzQ5bTRhdzM3eWJ1OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SwyOH4mhTGldblatRc/giphy.gif" alt="Gif divertente" class="img-fluid">
+    </div>
+    <hr>
+    <a class=" btn btn-secondary" href="/">Nuovo torneo</a>
   </div>
 
 </body>
