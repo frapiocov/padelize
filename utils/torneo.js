@@ -241,10 +241,10 @@ function calcolaPunteggi(partite) {
 
 		// Calcola la media livello
 		const mediaVincente = vincitori
-			? vincitori[0].livello + vincitori[1].livello
+			? (vincitori[0].livello + vincitori[1].livello) / 2
 			: 0;
 		const mediaPerdente = perdenti
-			? perdenti[0].livello + perdenti[1].livello
+			? (perdenti[0].livello + perdenti[1].livello) / 2
 			: 0;
 		let bonus = 0;
 		if (mediaVincente < mediaPerdente) {

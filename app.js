@@ -80,6 +80,7 @@ app.post("/finali", (req, res) => {
 
 	// Controlla i vincitori delle semifinali
 	var vincitori = torneoUtils.creaFinali(risultati, semifinali);
+	req.session.vincitori = vincitori; 
 
 	res.render("finale", { vincitori: vincitori });
 });
@@ -96,11 +97,11 @@ app.post("/premiazione", (req, res) => {
 
 	// Determina vincitori gold
 	const vincitoriGold =
-		punteggioGoldA > punteggioGoldB ? partecipanti.gold[1] : partecipanti.gold[0];
+		punteggioGoldA > punteggioGoldB ? partecipanti.gold[0] : partecipanti.gold[1];
 
 	// Determina vincitori silver
 	const vincitoriSilver =
-		punteggioSilverA > punteggioSilverB ? partecipanti.silver[1] : partecipanti.silver[0];
+		punteggioSilverA > punteggioSilverB ? partecipanti.silver[0] : partecipanti.silver[1];
 
 	res.render("premiazione", {
 		gold: vincitoriGold,
