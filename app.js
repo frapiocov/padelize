@@ -78,8 +78,6 @@ app.post("/finali", (req, res) => {
 	const risultati = req.body;
 	var semifinali = req.session.semifinali;
 
-	console.log("Risultati semifinali:", risultati);
-
 	// Controlla i vincitori delle semifinali
 	var vincitori = torneoUtils.creaFinali(risultati, semifinali);
 
@@ -90,8 +88,6 @@ app.post("/finali", (req, res) => {
 app.post("/premiazione", (req, res) => {
 	const risultati = req.body;
 	const partecipanti = req.session.vincitori;
-
-	console.log("Partecipanti vincitori:", risultati);
 
 	const punteggioGoldA = parseInt(risultati[0]);
 	const punteggioGoldB = parseInt(risultati[1]);

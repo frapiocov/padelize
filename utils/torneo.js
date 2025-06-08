@@ -217,10 +217,10 @@ function calcolaPunteggi(partite) {
 
 		// Calcola la squadra vincente
 		let vincitori, perdenti;
-		if (punti1 >= punti2) {
+		if (punti1 > punti2) {
 			vincitori = coppie[0];
 			perdenti = coppie[1];
-			if (punti1 > punti2 + 6) {
+			if (punti1 > punti2 && punti1 >= 6 && punti2 < 5) {
 				puntiVincitore = vittNetta;
 				puntiPerdente = 0; // Vittoria netta
 			} else {
@@ -230,7 +230,7 @@ function calcolaPunteggi(partite) {
 		} else if (punti2 > punti1) {
 			vincitori = coppie[1];
 			perdenti = coppie[0];
-			if (punti2 > punti1 + 6) {
+			if (punti2 > punti1 && punti2 >= 6 && punti1 < 5) {
 				puntiVincitore = vittNetta;
 				puntiPerdente = 0; // Vittoria netta
 			} else {
@@ -246,7 +246,10 @@ function calcolaPunteggi(partite) {
 		const mediaPerdente = perdenti
 			? perdenti[0].livello + perdenti[1].livello
 			: 0;
-		const bonus = vincitori ? (mediaVincente - mediaPerdente) * 0.5 : 0;
+		let bonus = 0;
+		if (mediaVincente < mediaPerdente) {
+			bonus = (mediaPerdente - mediaVincente) * 0.5;
+		}
 
 		// aggiorna punteggi
 		vincitori[0].punteggio += puntiVincitore + bonus;
@@ -278,12 +281,12 @@ function suddividiInRound(classifica) {
 function creaSemifinali(giocatori) {
 	// Abbinamenti: 1vs4 e 2vs3 (accoppiati)
 	const semifinale1 = {
-		squadra1: [giocatori[0], giocatori[3]],
-		squadra2: [giocatori[1], giocatori[2]],
+		squadra1: [giocatori[0], giocatori[2]],
+		squadra2: [giocatori[1], giocatori[3]],
 	};
 	const semifinale2 = {
-		squadra1: [giocatori[4], giocatori[7]],
-		squadra2: [giocatori[5], giocatori[6]],
+		squadra1: [giocatori[4], giocatori[6]],
+		squadra2: [giocatori[5], giocatori[7]],
 	};
 	return [semifinale1, semifinale2];
 }
