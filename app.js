@@ -1,27 +1,12 @@
-const express = require("express");
-const session = require("express-session");
-const MemoryStore = require("memorystore")(session);
-const path = require("path");
-const torneoUtils = require("./utils/torneo");
+const express = require('express');
+const session = require('express-session');
+const path = require('path');
+const torneoUtils = require('./utils/torneo');
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(express.static("public"));
-app.use(
-	session({
-		cookie: { maxAge: 172800000 },
-		store: new MemoryStore({
-			checkPeriod: 172800000, // prune expired entries every 48h
-		}),
-		secret: "PADEL",
-		resave: false,
-		saveUninitialized: true,
-	})
-);
-
-// Inizializza NeDB
-// const db = new Datastore({ filename: 'database.db', autoload: true });
+app.use(express.static('public'));
+app.use(session({ secret: 'torneo123', resave: false, saveUninitialized: true }));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
