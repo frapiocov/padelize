@@ -296,28 +296,28 @@ function creaFinali(risultati, semifinali) {
 	var vincitoriSilver = [];
 
 	// prima semifinale
-	if (risultati[0] < risultati[1]) {
+	if (risultati[0] > risultati[1]) {
 		vincitoriGold.push(semifinali.gold[0].squadra1);
 	} else {
 		vincitoriGold.push(semifinali.gold[0].squadra2);
 	}
 
 	//seconda semifinale
-	if (risultati[2] < risultati[3]) {
+	if (risultati[2] > risultati[3]) {
 		vincitoriGold.push(semifinali.gold[1].squadra1);
 	} else {
 		vincitoriGold.push(semifinali.gold[1].squadra2);
 	}
 
 	// terza semifinale
-	if (risultati[4] < risultati[5]) {
+	if (risultati[4] > risultati[5]) {
 		vincitoriSilver.push(semifinali.silver[0].squadra1);
 	} else {
 		vincitoriSilver.push(semifinali.silver[0].squadra2);
 	}
 
 	// quarta semifinale
-	if (risultati[6] < risultati[7]) {
+	if (risultati[6] > risultati[7]) {
 		vincitoriSilver.push(semifinali.silver[1].squadra1);
 	} else {
 		vincitoriSilver.push(semifinali.silver[1].squadra2);
